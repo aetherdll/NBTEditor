@@ -37,6 +37,8 @@ The zip contains:
 | `NBTEditor.runtimeconfig.dev.json` | Development runtime configuration (optional) |
 | `NBTEditor.pdb` | Debug symbols (optional) |
 
+> **Note:** `fNbt.dll` is already included in the zip, so there is nothing else to download or install except the .NET runtime below.
+>
 > **Important:** Keep all files together in the same folder. `NBTEditor.exe` will not work without `NBTEditor.dll`, `fNbt.dll` and the `.json` configuration files next to it.
 
 ### Requirements
@@ -71,12 +73,6 @@ git clone https://github.com/aetherdll/NBTEditor.git
 cd NBTEditor
 dotnet restore
 dotnet build -c Release
-```
-
-If the [fNbt](https://www.nuget.org/packages/fNbt) NuGet package is not restored automatically:
-
-```bash
-dotnet add package fNbt
 ```
 
 Run it with `dotnet run -- <arguments>` or use the compiled files from `bin/Release/<target-framework>/`.
