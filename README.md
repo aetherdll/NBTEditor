@@ -64,21 +64,6 @@ Running `NBTEditor.exe` with no arguments prints the help text.
 
 ---
 
-## Build from source (optional)
-
-You only need this if you want to modify the code. Requires the [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
-
-```bash
-git clone https://github.com/aetherdll/NBTEditor.git
-cd NBTEditor
-dotnet restore
-dotnet build -c Release
-```
-
-Run it with `dotnet run -- <arguments>` or use the compiled files from `bin/Release/<target-framework>/`.
-
----
-
 ## Usage
 
 ```text
