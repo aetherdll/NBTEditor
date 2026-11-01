@@ -21,14 +21,50 @@ A fast, lightweight command-line tool written in **C#** for working with Minecra
 
 ---
 
-## Requirements
+## Download
 
-- [.NET SDK](https://dotnet.microsoft.com/download) 6.0 or later (recommended)
-- [fNbt](https://www.nuget.org/packages/fNbt) NuGet package (used for reading/writing NBT)
+Grab the latest ready-to-use build from the [**Releases**](https://github.com/aetherdll/NBTEditor/releases) page and extract the `.zip` file to any folder.
+
+The zip contains:
+
+| File | Purpose |
+| --- | --- |
+| `NBTEditor.exe` | The program itself |
+| `NBTEditor.dll` | Main application library |
+| `fNbt.dll` | NBT reading/writing library (required) |
+| `NBTEditor.deps.json` | Dependency information |
+| `NBTEditor.runtimeconfig.json` | .NET runtime configuration |
+| `NBTEditor.runtimeconfig.dev.json` | Development runtime configuration (optional) |
+| `NBTEditor.pdb` | Debug symbols (optional) |
+
+> **Important:** Keep all files together in the same folder. `NBTEditor.exe` will not work without `NBTEditor.dll`, `fNbt.dll` and the `.json` configuration files next to it.
+
+### Requirements
+
+- Windows
+- [**.NET 10.0 Runtime**](https://dotnet.microsoft.com/download/dotnet/10.0) (required). This project is built with .NET 10.0, so older versions will not work. If you get a ".NET is required" message when starting the program, install the runtime from the link. Only the **Runtime** is needed, not the SDK.
+
+### Quick start
+
+NBTEditor is a command-line tool, so run it from a terminal rather than by double-clicking:
+
+1. Extract the zip to a folder, for example `C:\NBTEditor`.
+2. Open that folder, click the address bar, type `cmd` and press Enter. This opens a terminal in the folder.
+3. Run a command:
+
+```bat
+NBTEditor.exe level.dat -o level.json
+```
+
+Tip: put the file you want to convert in the same folder, or give the full path, for example `NBTEditor.exe "C:\Users\You\saves\World\level.dat" -o level.json`. Use quotes if the path contains spaces.
+
+Running `NBTEditor.exe` with no arguments prints the help text.
 
 ---
 
-## Installation
+## Build from source (optional)
+
+You only need this if you want to modify the code. Requires the [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```bash
 git clone https://github.com/aetherdll/NBTEditor.git
@@ -37,19 +73,13 @@ dotnet restore
 dotnet build -c Release
 ```
 
-If the `fNbt` package is not restored automatically:
+If the [fNbt](https://www.nuget.org/packages/fNbt) NuGet package is not restored automatically:
 
 ```bash
 dotnet add package fNbt
 ```
 
-To run the tool:
-
-```bash
-dotnet run -- <arguments>
-```
-
-or use the compiled executable from `bin/Release/<target-framework>/`.
+Run it with `dotnet run -- <arguments>` or use the compiled files from `bin/Release/<target-framework>/`.
 
 ---
 
@@ -68,7 +98,7 @@ NBTEditor --all <directory_path>
 NBTEditor --export-all <directory_path>
 ```
 
-Running the program without arguments prints this help text.
+Running the program without arguments prints this help text. In the examples below, `NBTEditor` means `NBTEditor.exe` on Windows.
 
 ### Commands
 
@@ -198,7 +228,7 @@ Contributions, issues and feature requests are welcome. Feel free to open an iss
 
 ## License
 
-Add your license here (for example MIT). See the `LICENSE` file for details.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
