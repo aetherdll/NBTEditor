@@ -7,16 +7,17 @@ A fast, lightweight command-line tool written in **C#** for working with Minecra
 ## Features
 
 - **NBT → JSON**: convert any `.dat` / `.nbt` file to pretty-printed JSON
-- **JSON → NBT**: convert JSON back into a GZip-compressed NBT file
+- **JSON → NBT**: convert JSON back into a GZip-compressed NBT file (`--jsontonbt`)
 - **Batch export**: convert a whole folder tree to JSON while preserving the folder structure
 - **Batch import**: convert every `.json` file in a folder back to `.dat`
 - **Search**: find tags by name or value (case-insensitive, recursive)
-- **Edit values**: change a tag's value directly from the command line (with automatic backup)
+- **Edit values**: change a tag's value directly from the command line, with type-checked input and an automatic backup of the original
 - **File info**: size, root tag name/type and compression type
 - **Structure summary**: dimensions and block count for structure `.nbt` files
 - **Player summary**: health, food level, XP level and position from `playerdata` / `level.dat` style files
 - **Validation**: check whether an NBT file is readable and structurally sound
-- **Safe by default**: existing output files and edited files are backed up as `.bak`
+- **Safe by default**: the original file is backed up once as `.bak` (never overwritten by later edits), and files are written to a temporary file first, so a failed write can't leave you with a half-written file
+- **Script friendly**: exit code `0` on success and `1` on errors
 - **Colored console output** (`[INFO]`, `[SUCCESS]`, `[ERROR]`)
 
 ---
@@ -68,7 +69,7 @@ Running `NBTEditor.exe` with no arguments prints the help text.
 
 ```text
 NBTEditor <file>.dat_or_nbt -o <file>.json
-NBTEditor -jsontonbt <file>.json -o <file>.dat_or_nbt
+NBTEditor --jsontonbt <file>.json -o <file>.dat_or_nbt
 NBTEditor <file>.dat_or_nbt --find "SearchQuery"
 NBTEditor <file>.dat_or_nbt --set "TagName" "NewValue"
 NBTEditor <file>.dat_or_nbt --info
@@ -86,14 +87,14 @@ Running the program without arguments prints this help text. In the examples bel
 | Command | Description |
 | --- | --- |
 | `<file> -o <out.json>` | Convert an NBT file to JSON |
-| `-jsontonbt <file.json> -o <out.dat>` | Convert JSON to a GZip-compressed NBT file |
+| `--jsontonbt <file.json> -o <out.dat>` | Convert JSON to a GZip-compressed NBT file (an existing output file is backed up as `.bak` first) |
 | `<file> --find "<query>"` | Search tag names and values (case-insensitive) |
-| `<file> --set "<tag>" "<value>"` | Update the first tag with the given name (a `.bak` backup is created first) |
+| `<file> --set "<tag>" "<value>"` | Update the first tag with the given name (a `.bak` backup of the original is created first) |
 | `<file> --info` | Show file size, root tag name/type and compression |
 | `<file> --structure` | Show size (X × Y × Z) and block count of a structure file |
 | `<file> --player` | Show health, food level, XP level and position |
 | `<file> --validate` | Check whether the file can be read correctly |
-| `--all <dir>` | Convert all `.json` files in a directory to `.dat` |
+| `--all <dir>` | Convert all `.json` files in a directory to `.dat` (existing `.dat` files with the same name are overwritten) |
 | `--export-all <dir>` | Convert all `.dat` / `.nbt` files in a directory (recursively) to JSON |
 
 ### Examples
@@ -107,7 +108,7 @@ NBTEditor level.dat -o level.json
 **Convert the JSON back to NBT**
 
 ```bash
-NBTEditor -jsontonbt level.json -o level.dat
+NBTEditor --jsontonbt level.json -o level.dat
 ```
 
 **Search for a tag or value**
@@ -126,7 +127,7 @@ NBTEditor level.dat --find "LevelName"
 NBTEditor level.dat --set "LevelName" "My New World"
 ```
 
-A backup (`level.dat.bak`) is created automatically before the file is modified.
+A backup (`level.dat.bak`) is created automatically the first time you edit a file. An existing `.bak` is never overwritten, so it always keeps your original file. The value must match the tag's type: for example, you can't put text into an Int tag, and in that case the file is left unchanged and an error is shown. Decimal numbers always use a dot (`1.5`), regardless of your system language.
 
 **Show a player summary**
 
@@ -164,7 +165,8 @@ This creates `Output-world` next to the source folder, mirroring the original fo
 | Byte / Short / Int / Long | Number |
 | Float / Double | Number |
 | String | String |
-| Byte Array / Int Array / Long Array | Array of numbers |
+| Byte Array | Array of numbers (signed, -128 to 127) |
+| Int Array / Long Array | Array of numbers |
 
 ### JSON → NBT
 
@@ -181,15 +183,18 @@ Special handling for common Minecraft tags:
 - `UUID` → Int Array
 - `Pos`, `Motion` → List of Doubles
 - `Rotation` → List of Floats
+- Any other array that contains only numbers with at least one decimal value → List of Doubles
 
-Files are always written **GZip-compressed**, which is the format Minecraft uses for `level.dat` and player data.
+Tag names `Pos`, `Motion` and `Rotation` are case-sensitive.
+
+`--jsontonbt` writes **GZip-compressed** files, which is the format Minecraft uses for `level.dat` and player data. JSON files up to 512 levels deep are supported.
 
 ---
 
 ## Limitations
 
 - JSON has no equivalent for every NBT type, so a round trip (NBT → JSON → NBT) can change some tag types (for example Byte/Short/Float values come back as Int/Double, and Byte/Long arrays come back as Lists).
-- `--set` supports Byte, Short, Int, Long, Float, Double and String tags only, and updates the **first** tag found with the given name.
+- `--set` supports Byte, Short, Int, Long, Float, Double and String tags only, and updates the **first** tag found with the given name (the search is case-insensitive).
 - `--all` only processes `.json` files in the given directory (not subdirectories).
 - Always keep a backup of your world before editing or re-importing data, and **close Minecraft** before modifying world files.
 
@@ -212,6 +217,11 @@ Contributions, issues and feature requests are welcome. Feel free to open an iss
 This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See the [LICENSE](LICENSE) file for details.
 
 ---
+
+## Acknowledgements
+
+- [fNbt](https://github.com/fragmer/fNbt): NBT reading/writing library
+- Minecraft is a trademark of Mojang AB. This project is not affiliated with or endorsed by Mojang or Microsoft.s
 
 ## Acknowledgements
 
